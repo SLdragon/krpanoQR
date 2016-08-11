@@ -1,0 +1,68 @@
+<!--by SLdragon qq群551278936-->
+<krpano>
+
+	<plugin name="qrcode" keep="true"
+	        url="qrcode.js"
+			onloaded="addQR();"
+	/>
+	
+	<layer name="QR" keep="true" devices="desktop"
+			align="right" x="10"  alpha="0.25" scale="0.1" onclick="tweenCenter(get(name));"
+			isMiddle="false" zorder="100"
+	/>
+			
+	<action  name="addQR"  devices="desktop">
+		 plugin[qrcode].get_qr_image(new_url);
+		 set(layer[QR].url,get(new_url));
+	</action>
+	
+	<events name="QRResizeEvent" 
+			onresize="onResizeAction()"
+			keep="true"
+	/>
+	
+	<action name="onResizeAction">
+		if(layer[QR].isMiddle,
+		
+			def(a,number,calc(stagewidth/layer[QR].width));
+			def(b,number,calc(stageheight/layer[QR].height));
+			Math.min(scaleMax,get(a),get(b));
+			
+			set(layer[QR].scale,get(scaleMax));
+			
+			def(stageW,number,get(stagewidth));
+			def(QRW,number,get(layer[QR].width));
+			set(layer[QR].x,calc((stageW-QRW*scaleMax)/2));
+		)
+	</action>
+	
+	<action name="tweenCenter">
+		
+		trace(stagewidth);
+		trace(layer[%1].width);
+		def(a,number,calc(stagewidth/layer[%1].width));
+		def(b,number,calc(stageheight/layer[%1].height));
+		Math.min(scaleMax,get(a),get(b));
+		trace(get(scaleMax));
+		tween(layer[%1].alpha,1);
+		tween(layer[%1].scale,get(scaleMax));
+		
+		def(stageW,number,get(stagewidth));
+		def(QRW,number,get(layer[%1].width));
+		tween(layer[%1].x,calc((stageW-QRW*scaleMax)/2));	
+		
+		set(layer[%1].onclick,"tweenRight(get(name))");
+		set(layer[%1].isMiddle,"true");
+	</action>
+	
+	
+	<action name="tweenRight">
+		tween(layer[%1].alpha,0.25);
+		tween(layer[%1].scale,0.1);
+		tween(layer[%1].x,10);	
+		
+		set(layer[%1].onclick,"tweenCenter(get(name))");	
+		set(layer[%1].isMiddle,"false");		
+	</action>
+
+</krpano>
